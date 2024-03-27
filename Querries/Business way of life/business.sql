@@ -39,7 +39,7 @@ AverageCostPerBarcode AS (
 Select
     MONTH, 
     ranked_data.barCode AS best_sold_reference,
-    0 as units_purchased, --Number of purchases es las que se han pedido a los proveedores
+    NVL(r.units, 0) as units_bought, --Number of purchases es las que se han pedido a los proveedores
     total_quantity AS units_sold,
     total_income,
     total_income-(avg_cost*total_quantity) as benefit
@@ -59,6 +59,8 @@ FROM (
 ) ranked_data 
 JOIN
     AverageCostPerBarcode ON ranked_data.barCode = AverageCostPerBarcode.barCode
+LEFT OUTER JOIN
+    Replacements r ON ranked_data.barCode = r.barCode
 WHERE
     rank = 1
 ORDER BY
