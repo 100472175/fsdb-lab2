@@ -44,9 +44,13 @@ CREATE OR REPLACE TRIGGER my_posts_del
     INSTEAD OF DELETE ON my_posts
     FOR EACH ROW
     BEGIN
-        DELETE FROM posts
-        WHERE username = current_user
-            AND TO_CHAR(postdate, 'DD-MM-YYYY') = (select postdate from my_posts where id = :OLD.id);
+        IF :OLD.likes > 0 THEN
+            RAISE_APPLICATION_ERROR(-20000, 'You cannot delete a post with likes');
+        ELSE
+            DELETE FROM posts
+            WHERE username = current_user
+                AND TO_CHAR(postdate, 'DD-MM-YYYY') = (select postdate from my_posts where id = :OLD.id);
+        END IF;
     END;
 
 -- Only if the likes of the post are 0, then you can change the text and only the text.
@@ -54,12 +58,12 @@ CREATE OR REPLACE TRIGGER my_posts_upd
     INSTEAD OF UPDATE ON my_posts
     FOR EACH ROW
     BEGIN
-        IF :OLD.likes = 0 THEN
+        IF :OLD.likes != 0 THEN
+            RAISE_APPLICATION_ERROR(-20000, 'You can only change the text of a post if the likes are 0');
+        ELSE
             UPDATE posts
             SET text = :NEW.text
             WHERE username = current_user
                 AND TO_CHAR(postdate, 'DD-MM-YYYY') = (select postdate from my_posts where id = :OLD.id);
-        ELSE
-            RAISE_APPLICATION_ERROR(-20000, 'You can only change the text of a post if the likes are 0');
         END IF;
     END;
