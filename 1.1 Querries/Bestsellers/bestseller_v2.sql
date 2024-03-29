@@ -74,15 +74,15 @@ TotalAmountPerVarietal AS (
 )
 -- The final query.
 SELECT 
-    rv.country,
-    rv.varietal,
+    rv.country AS country,
+    rv.varietal AS varietal,
     CASE 
         WHEN rv.total_units_sold > 0.01 * tav.total_units_sold THEN 'Yes'
         ELSE 'No'
     END AS Candidate,
-    rv.num_buyers,
-    rv.total_units_sold,
-    rv.avg_units_per_reference,
+    rv.num_buyers as num_buyers,
+    rv.total_units_sold as units_sold,
+    rv.avg_units_per_reference as avg_units_per_reference,
     TRIM(rv.total_revenue) AS total_revenue
 FROM 
     RankedVarietals rv
