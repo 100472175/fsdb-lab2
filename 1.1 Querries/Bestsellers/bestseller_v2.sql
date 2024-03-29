@@ -1,4 +1,5 @@
-WITH SalesData AS (
+-- Data from the users who did not register to buy the products.
+WITH Anonym_Data AS (
     SELECT 
         l.contact AS username, 
         r.product AS product_name, 
@@ -17,7 +18,9 @@ WITH SalesData AS (
         Products p ON r.product = p.product 
     WHERE 
         EXTRACT(YEAR FROM orderdate) = 2023 
-    UNION ALL
+),
+-- Data from the users who registered to buy the products.
+Client_Data AS (
     SELECT DISTINCT 
         l.username, 
         r.product AS product_name, 
@@ -37,15 +40,13 @@ WITH SalesData AS (
     WHERE 
         EXTRACT(YEAR FROM orderdate) = 2023
 ),
-TotalAmountPerVarietal AS (
-    Select 
-        varietal,
-        SUM(quantity) AS total_units_sold
-    FROM
-        SalesData
-    GROUP BY
-        varietal
+-- Combination the data from the two sources.
+SalesData As (
+    SELECT * FROM Anonym_Data
+    UNION ALL
+    SELECT * FROM Client_Data
 ),
+-- Data about each varietal.
 RankedVarietals AS (
     SELECT 
         country,
@@ -55,12 +56,23 @@ RankedVarietals AS (
         COUNT(DISTINCT product_name) AS num_references,
         SUM(quantity) / COUNT(DISTINCT product_name) AS avg_units_per_reference,
         ROW_NUMBER() OVER (PARTITION BY country ORDER BY SUM(quantity) DESC) AS rank,
-        CONCAT(SUM(price * quantity), ' €') AS total_revenue
+        CONCAT(SUM(price * quantity), ' €') AS total_revenue -- The € is not displayed propperly.
     FROM 
         SalesData
     GROUP BY 
         country, varietal
+),
+-- Total amount of units sold per varietal.
+TotalAmountPerVarietal AS (
+    Select 
+        varietal,
+        SUM(quantity) AS total_units_sold
+    FROM
+        SalesData
+    GROUP BY
+        varietal
 )
+-- The final query.
 SELECT 
     rv.country,
     rv.varietal,

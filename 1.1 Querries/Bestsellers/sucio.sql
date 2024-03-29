@@ -105,3 +105,18 @@ WHERE
     rank = 1;
 
 
+
+
+
+
+QOO14791O129686
+OQQ55129I752487
+IIQ46808O441455
+QIO96932O786195
+IIO67232I467809
+
+select 'QOO14791O129686' as barcode, varietal from products where product=(select product from references where barcode='QOO14791O129686');
+select 'OQQ55129I752487' as barcode, varietal from products where product=(select product from references where barcode='OQQ55129I752487');
+select 'IIQ46808O441455' as barcode, varietal from products where product=(select product from references where barcode='IIQ46808O441455');
+select 'QIO96932O786195' as barcode, varietal from products where product=(select product from references where barcode='QIO96932O786195');
+select 'IIO67232I467809' as barcode, varietal from products where product=(select product from references where barcode='IIO67232I467809');
