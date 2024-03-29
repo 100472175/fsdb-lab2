@@ -1,7 +1,22 @@
 create or replace view my_purchases as (
-    select * from Orders_Clients
+    select 
+      NVL(TO_CHAR(cl.orderdate, 'DD-MM-YYYY') , 'NaN') as orderdate,
+      NVL(cl.username, 'NaN') as username,
+      NVL(cl.town, 'NaN') as town,
+      NVL(cl.country, 'NaN') as country,
+      LTRIM(NVL(TO_CHAR(cl.price), 'NaN')) as price,
+      RPAD(NVL(cl.quantity, 'NaN'), 2) as quantity,
+      NVL(cl.pay_type, 'NaN') as pay_type,
+      NVL(TO_CHAR(cl.pay_datetime, 'DD-MM-YYYY'), 'NaN') as pay_date,
+      NVL(r.product, 'NaN') as product,
+      RPAD(NVL(r.format, 'NaN'), 2) as format,
+      NVL(r.pack_type, 'NaN') as pack_type
+    from References r
+    join Client_Lines cl on r.barCode = cl.barcode   
     where username = current_user
-)
+);
+select * from my_purchases;
+
    
 -- The problem is that there is no data with the user fsdb279 in the Orders_Clients table,
 -- thus we use a package to change the user to check if the view is working
