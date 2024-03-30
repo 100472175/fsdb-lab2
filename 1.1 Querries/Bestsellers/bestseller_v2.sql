@@ -1,4 +1,4 @@
--- Data from the users who did not register to buy the products.
+-- Data from each sale from both registered and anonymous clients.
 WITH Anonym_Data AS (
     SELECT 
         l.contact AS username, 
@@ -30,7 +30,7 @@ Client_Data AS (
         TRIM(l.country) AS country, 
         l.town,
         CAST(l.quantity AS INTEGER) AS quantity,
-        l.barCode as barCode
+        l.barCode AS barCode
     FROM
         Client_Lines l
     JOIN
@@ -41,7 +41,7 @@ Client_Data AS (
         EXTRACT(YEAR FROM orderdate) = 2023
 ),
 -- Combination the data from the two sources.
-SalesData As (
+SalesData AS (
     SELECT * FROM Anonym_Data
     UNION ALL
     SELECT * FROM Client_Data
@@ -80,9 +80,9 @@ SELECT
         WHEN rv.total_units_sold > 0.01 * tav.total_units_sold THEN 'Yes'
         ELSE 'No'
     END AS Candidate,
-    rv.num_buyers as num_buyers,
-    rv.total_units_sold as units_sold,
-    rv.avg_units_per_reference as avg_units_per_reference,
+    rv.num_buyers AS num_buyers,
+    rv.total_units_sold AS units_sold,
+    rv.avg_units_per_reference AS avg_units_per_reference,
     TRIM(rv.total_revenue) AS total_revenue
 FROM 
     RankedVarietals rv

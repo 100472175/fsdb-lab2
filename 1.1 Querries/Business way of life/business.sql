@@ -1,4 +1,5 @@
-WITH SalesData AS (
+-- Data FROM each sale FROM both registered and anonymous clients.
+WITH Registered AS (
     SELECT 
         TO_CHAR(l.orderdate,'Month') AS MONTH,
         l.contact AS username, 
@@ -12,7 +13,8 @@ WITH SalesData AS (
         References r ON l.barCode = r.barCode
     WHERE 
         l.orderdate >= SYSDATE - INTERVAL '12' month 
-    UNION ALL 
+),
+Anonymous AS ( 
     SELECT DISTINCT 
         TO_CHAR(l.orderdate,'Month') AS MONTH,
         l.username as username, 
@@ -27,6 +29,11 @@ WITH SalesData AS (
     WHERE 
         EXTRACT(YEAR FROM orderdate) = 2023
 ),
+SalesData AS (
+    SELECT * FROM Registered
+    UNION ALL (select * FROM Anonymous)
+),
+-- Average cost per barcode.
 AverageCostPerBarcode AS (
     SELECT 
         barCode,
@@ -36,7 +43,8 @@ AverageCostPerBarcode AS (
     GROUP BY
         barCode
 )
-Select
+-- Rettrieve the data FROM the sales and the average cost per barcode, selecting only the first one for each month.
+SELECT
     MONTH, 
     ranked_data.barCode AS best_sold_reference,
     NVL(r.units, 0) as units_bought, --Number of purchases es las que se han pedido a los proveedores
@@ -44,7 +52,7 @@ Select
     total_income,
     total_income-(avg_cost*total_quantity) as benefit
 FROM (
-    Select
+    SELECT
         MONTH,
         product_name,
         price,
