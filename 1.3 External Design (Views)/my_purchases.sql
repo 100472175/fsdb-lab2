@@ -25,6 +25,7 @@ CREATE OR REPLACE PACKAGE USER_INFO__PKG AS
   current_user VARCHAR2(50); -- Define the variable in the package specification
 END USER_INFO__PKG;
 /
+
 CREATE OR REPLACE PACKAGE BODY USER_INFO__PKG AS
 BEGIN
   current_user := user; -- <-- Here is where the user is changed to check  if the view is working
@@ -36,8 +37,5 @@ CREATE OR REPLACE FUNCTION current_user RETURN VARCHAR2 IS
 BEGIN
   RETURN USER_INFO__PKG.current_user;
 END current_user;
-
-
-
 
 

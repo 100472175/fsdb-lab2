@@ -1,5 +1,5 @@
 -- Data FROM each sale FROM both registered and anonymous clients.
-WITH Registered AS (
+WITH Anonymous AS (
     SELECT 
         TO_CHAR(l.orderdate,'Month') AS MONTH,
         l.contact AS username, 
@@ -14,7 +14,7 @@ WITH Registered AS (
     WHERE 
         l.orderdate >= SYSDATE - INTERVAL '12' month 
 ),
-Anonymous AS ( 
+Registered AS ( 
     SELECT DISTINCT 
         TO_CHAR(l.orderdate,'Month') AS MONTH,
         l.username as username, 
@@ -42,16 +42,8 @@ AverageCostPerBarcode AS (
         Supply_Lines
     GROUP BY
         barCode
-)
--- Rettrieve the data FROM the sales and the average cost per barcode, selecting only the first one for each month.
-SELECT
-    MONTH, 
-    ranked_data.barCode AS best_sold_reference,
-    NVL(r.units, 0) as units_bought, --Number of purchases es las que se han pedido a los proveedores
-    total_quantity AS units_sold,
-    total_income,
-    total_income-(avg_cost*total_quantity) as benefit
-FROM (
+),
+Ranked_Data AS (
     SELECT
         MONTH,
         product_name,
@@ -64,7 +56,16 @@ FROM (
         SalesData
     GROUP BY
         MONTH, product_name, price, SalesData.barCode
-) ranked_data 
+)
+-- Rettrieve the data FROM the sales and the average cost per barcode, selecting only the first one for each month.
+SELECT
+    MONTH, 
+    ranked_data.barCode AS best_sold_reference,
+    NVL(r.units, 0) as units_bought, --Number of purchases es las que se han pedido a los proveedores
+    total_quantity AS units_sold,
+    total_income,
+    total_income-(avg_cost*total_quantity) as benefit
+FROM Ranked_Data 
 JOIN
     AverageCostPerBarcode ON ranked_data.barCode = AverageCostPerBarcode.barCode
 LEFT OUTER JOIN
