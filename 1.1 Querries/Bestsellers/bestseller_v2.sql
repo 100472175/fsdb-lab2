@@ -17,7 +17,7 @@ WITH Anonym_Data AS (
     JOIN 
         Products p ON r.product = p.product 
     WHERE 
-        EXTRACT(YEAR FROM orderdate) = 2023 
+        EXTRACT(YEAR FROM orderdate) = EXTRACT(YEAR FROM SYSDATE)-1
 ),
 -- Data from the users who registered to buy the products.
 Client_Data AS (
@@ -38,7 +38,7 @@ Client_Data AS (
     JOIN
         Products p ON r.product = p.product
     WHERE 
-        EXTRACT(YEAR FROM orderdate) = 2023
+        EXTRACT(YEAR FROM orderdate) = EXTRACT(YEAR FROM SYSDATE)-1
 ),
 -- Combination the data from the two sources.
 SalesData AS (
