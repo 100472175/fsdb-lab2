@@ -1,16 +1,5 @@
--- UPDATE stocks:
--- After insertion to anonym_lines or client_lines, check the stop of that product in the table references
--- IF the current stock is greater than the order quantity, UPDATE the stock to stock-order_quantity.
 
--- IF the current stock is less than the minimum stock, UPDATE the stock to 0 AND the order quantity to the stock.
--- Cehck there is no supply line with the same product AND status = 'D'.
--- Create a replacement order with:
-     -- orderdate as sysdate, 
-     -- reference FROM the one that has the minimum cost AND the same product FROM the supply_lines,
-     -- units = minimum stock FROM the references table,
-     -- payment = '1234567890.12'
-
-CREATE OR REPLACE TRIGGER UPDATE_stocks
+CREATE OR REPLACE TRIGGER UPDATE_stocks_anonym
 AFTER INSERT ON Lines_Anonym
 FOR each ROW
 DECLARE
@@ -56,4 +45,3 @@ BEGIN
     END IF;
 END;
 /
-show errors;

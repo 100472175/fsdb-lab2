@@ -237,7 +237,7 @@ CREATE TABLE Client_Addresses (
 
 
 CREATE TABLE Client_Cards (
-  cardnum      NUMBER(20),
+  cardnum       NUMBER(20),
   username      VARCHAR2(30) NOT NULL,
   card_comp     VARCHAR2(15) NOT NULL,
   card_holder   VARCHAR2(30) NOT NULL,
