@@ -12,7 +12,7 @@ WITH Anonymous AS (
     JOIN
         References r ON l.barCode = r.barCode
     WHERE 
-        l.orderdate >= SYSDATE - INTERVAL '12' month 
+        l.orderdate BETWEEN add_months(sysdate, -12) and add_months(sysdate, -1)
 ),
 Registered AS ( 
     SELECT DISTINCT 
@@ -27,7 +27,7 @@ Registered AS (
     JOIN
         References r ON l.barCode = r.barCode
     WHERE 
-        EXTRACT(YEAR FROM orderdate) = 2023
+        l.orderdate BETWEEN add_months(sysdate, -12) and add_months(sysdate, -1)
 ),
 SalesData AS (
     SELECT * FROM Registered
