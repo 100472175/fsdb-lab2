@@ -1,0 +1,1 @@
+insert into clients (username, reg_datetime, user_passw, name, surn1, email, mobile) VALUES ('fsdb279', SYSDATE, '0', 'Edu', 'Ala', 'eee@eee.com', 654214563);
