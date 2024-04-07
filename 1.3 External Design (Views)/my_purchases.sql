@@ -1,22 +1,21 @@
 create or replace view my_purchases as (
     select 
-      NVL(TO_CHAR(cl.orderdate, 'DD-MM-YYYY') , 'NaN') as orderdate,
-      NVL(cl.username, 'NaN') as username,
-      NVL(cl.town, 'NaN') as town,
-      NVL(cl.country, 'NaN') as country,
-      LTRIM(NVL(TO_CHAR(cl.price), 'NaN')) as price,
-      RPAD(NVL(cl.quantity, 'NaN'), 2) as quantity,
-      NVL(cl.pay_type, 'NaN') as pay_type,
-      NVL(TO_CHAR(cl.pay_datetime, 'DD-MM-YYYY'), 'NaN') as pay_date,
-      NVL(r.product, 'NaN') as product,
-      RPAD(NVL(r.format, 'NaN'), 2) as format,
-      NVL(r.pack_type, 'NaN') as pack_type
-    from References r
-    join Client_Lines cl on r.barCode = cl.barcode   
+      TO_CHAR(cl.orderdate, 'DD-MM-YYYY') as orderdate,
+      cl.username as username,
+      cl.town as town,
+      cl.country as country,
+      LTRIM(TO_CHAR(cl.price)) as price,
+      RPAD(cl.quantity, 2) as quantity,
+      cl.pay_type as pay_type,
+      TO_CHAR(cl.pay_datetime, 'DD-MM-YYYY') as pay_date,
+      r.product as product,
+      RPAD(r.format, 2) as format,
+      r.pack_type as pack_type
+    from Client_Lines cl 
+    join References r on r.barCode = cl.barcode   
     where username = current_user
-);
+) with read only;
 select * from my_purchases;
-
    
 -- The problem is that there is no data with the user fsdb279 in the Orders_Clients table,
 -- thus we use a package to change the user to check if the view is working
@@ -28,7 +27,7 @@ END USER_INFO__PKG;
 
 CREATE OR REPLACE PACKAGE BODY USER_INFO__PKG AS
 BEGIN
-  current_user := user; -- <-- Here is where the user is changed to check  if the view is working
+  current_user := 'ethel'; -- <-- Here is where the user is changed to check  if the view is working
 END USER_INFO__PKG;
 /
 

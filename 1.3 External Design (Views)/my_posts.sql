@@ -1,6 +1,6 @@
 create or replace view my_posts as (
     select
-        TRIM(CAST(ROWNUM AS VARCHAR2(2))) as id,
+        CAST(ROWNUM AS NUMBER(2)) as id,
         TO_CHAR(postdate, 'DD-MM-YYYY') as postDate,
         product,
         barCode,
@@ -26,7 +26,7 @@ CREATE OR REPLACE TRIGGER my_posts_add
          SYSDATE,
         :NEW.barCode, 
         :NEW.product, 
-        0, 
+        :NEW.score, 
         :NEW.title, 
         :NEW.text, 
         0,
@@ -39,6 +39,7 @@ CREATE OR REPLACE TRIGGER my_posts_add
                         and barcode = :NEW.barCode)
         END);
     END;
+/
 
 CREATE OR REPLACE TRIGGER my_posts_del
     INSTEAD OF DELETE ON my_posts
@@ -52,10 +53,11 @@ CREATE OR REPLACE TRIGGER my_posts_del
                 AND TO_CHAR(postdate, 'DD-MM-YYYY') = (select postdate from my_posts where id = :OLD.id);
         END IF;
     END;
+/
 
 -- Only if the likes of the post are 0, then you can change the text and only the text.
 CREATE OR REPLACE TRIGGER my_posts_upd
-    INSTEAD OF UPDATE ON my_posts
+    INSTEAD OF UPDATE ON my_posts 
     FOR EACH ROW
     BEGIN
         IF :OLD.likes != 0 THEN
@@ -67,3 +69,4 @@ CREATE OR REPLACE TRIGGER my_posts_upd
                 AND TO_CHAR(postdate, 'DD-MM-YYYY') = (select postdate from my_posts where id = :OLD.id);
         END IF;
     END;
+/ 
