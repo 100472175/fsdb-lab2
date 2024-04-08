@@ -1,4 +1,3 @@
-
 CREATE OR REPLACE TRIGGER UPDATE_stocks_anonym
 AFTER INSERT ON Lines_Anonym
 FOR each ROW

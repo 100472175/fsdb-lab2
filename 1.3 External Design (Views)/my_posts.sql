@@ -8,38 +8,40 @@ create or replace view my_posts as (
         likes,
         title,
         text,
+        endorsed
         CASE 
-            WHEN endorsed IS NULL THEN 'Not endorsed'
-            ELSE 'Endorses'
+            WHEN endorsed IS NULL THEN 'N'
+            ELSE 'Y'
         END as endorsed
     from posts
     where username = current_user
 );
 
 CREATE OR REPLACE TRIGGER my_posts_add
-    INSTEAD OF INSERT ON my_posts
-    FOR EACH ROW
-    BEGIN
-        INSERT INTO posts (username, postdate, barCode, product, score, title, text, likes, endorsed)
-        VALUES 
-        (current_user,
-         SYSDATE,
-        :NEW.barCode, 
-        :NEW.product, 
-        :NEW.score, 
-        :NEW.title, 
-        :NEW.text, 
-        0,
-        CASE 
-            WHEN :NEW.endorsed = '0' OR :NEW.endorsed is NULL OR :NEW.endorsed = 0 THEN NULL
-            ELSE (
-                    select max(orderdate) 
-                    from Client_Lines 
-                    where username = current_user 
-                        and barcode = :NEW.barCode)
-        END);
-    END;
+   INSTEAD OF INSERT ON my_posts
+   FOR EACH ROW
+   BEGIN
+       INSERT INTO posts (username, postdate, barCode, product, score, title, text, likes, endorsed)
+       VALUES
+       (current_user,
+        SYSDATE,
+       :NEW.barCode,
+       :NEW.product,
+       :NEW.score,
+       :NEW.title,
+       :NEW.text,
+       0,
+       CASE
+           WHEN :NEW.endorsed = '0' OR :NEW.endorsed is NULL OR :NEW.endorsed = 0 OR :NEW.endorsed = 'N' OR :NEW.endorsed IS NULL THEN NULL
+           ELSE (
+                   select max(orderdate)
+                   from Client_Lines
+                   where username = current_user
+                       and barcode = :NEW.barCode)
+       END);
+   END;
 /
+w
 
 CREATE OR REPLACE TRIGGER my_posts_del
     INSTEAD OF DELETE ON my_posts

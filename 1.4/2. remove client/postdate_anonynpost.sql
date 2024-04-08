@@ -6,13 +6,11 @@ DECLARE
     v_time AnonyPosts.postdate % TYPE;
 BEGIN
     v_time := :NEW.postdate;
-    DBMS_OUTPUT.PUT_LINE('Entro en el trigger');
     -- Check if the postdate already exists in the table
     SELECT count(postdate) into count_time FROM AnonyPosts where postdate = v_time;
     WHILE count_time > 0 LOOP
         -- Add 0.1 seconds to the postdate until it becomes unique
         v_time := v_time + INTERVAL '1' SECOND;
-            DBMS_OUTPUT.PUT_LINE('Updated timestamp: ' || TO_CHAR(v_time, 'YYYY-MM-DD HH24:MI:SS'));
         SELECT count(postdate) into count_time FROM AnonyPosts where postdate = v_time;
     END LOOP;
     -- Update the postdate with the unique timestamp
