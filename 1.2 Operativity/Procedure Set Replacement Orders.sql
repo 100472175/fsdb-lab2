@@ -8,10 +8,11 @@ END caffeine;
 CREATE OR REPLACE PACKAGE BODY caffeine AS
     PROCEDURE update_status IS
     BEGIN
-        FOR ord IN (SELECT barCode, status FROM Replacements) LOOP
-            UPDATE Replacements
-            SET status = REPLACE(ord.status, 'D', 'P')
-            WHERE barCode = ord.barCode;
-        END LOOP;
+        FOR ord IN (SELECT barCode, status FROM Replacements WHERE status = 'D') 
+            LOOP
+                UPDATE Replacements
+                SET status = REPLACE(ord.status, 'D', 'P')
+                WHERE barCode = ord.barCode;
+            END LOOP;
     END update_status;
 END caffeine;
