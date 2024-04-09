@@ -97,8 +97,9 @@ minor_time AS (
 	WHERE k1.prov_taxid = (SELECT prov_taxid FROM fsdb.catalogue c WHERE c.BARCODE = k1.BARCODE AND rownum = 1)
 ),
 all_data_prov AS (
-SELECT * from minor_cost UNION SELECT * from minor_time)
-
+SELECT * from minor_cost
+UNION
+SELECT * from minor_time)
 SELECT c.PROV_TAXID AS taxID, 
 	t.BARCODE AS barCode, 
 	to_date(T.orderdate||T.ordertime,'yyyy / mm / ddhh:mi:ss am') AS orderdate,
