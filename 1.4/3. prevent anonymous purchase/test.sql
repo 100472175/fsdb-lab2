@@ -1,0 +1,28 @@
+INSERT INTO Lines_Anonym (
+    orderdate,   
+    contact,     
+    dliv_town,   
+    dliv_country,
+    barcode,     
+    price,       
+    quantity,    
+    pay_type,    
+    pay_datetime,
+    card_comp,   
+    card_num,    
+    card_holder, 
+    card_expir
+) VALUES 
+    (SYSDATE, 
+    'eee@eee.com', 
+    'Madrid', 
+    'Madrid', 
+    'OQI92757O715165', 
+    5, 
+    5, 
+    'CREDIT CARD', 
+    TO_DATE('01/03/22', 'DD/MM/YY'),
+    'Pai Pai', 
+    532143944287, 
+    'Inmaculada Gomez', 
+    TO_DATE('01-03-25', 'DD-MM-YY'));
