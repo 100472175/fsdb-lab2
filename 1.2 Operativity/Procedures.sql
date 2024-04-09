@@ -99,4 +99,5 @@ CREATE OR REPLACE PACKAGE BODY caffeine AS
                 DBMS_OUTPUT.PUT_LINE('Difference of offer ' || v_diffoffer);
             END;
         END LOOP;
+    END my_report;
 END caffeine;
