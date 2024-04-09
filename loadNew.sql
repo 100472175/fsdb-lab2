@@ -72,7 +72,50 @@ INSERT INTO Supply_Lines (taxID, barCode, cost)
 
 
 -- INSERT INTO Replacements (taxID, barCode, orderdate, status, units, deldate, payment)
--- no data
+INSERT INTO Replacements (taxID, barCode, orderdate,status,units, deldate, payment)
+WITH minor_cost AS (
+	SELECT b.BARCODE, b.PROV_TAXID, to_number(regexp_replace(regexp_replace(b.RETAIL_PRICE, '[^0-9.]', ''), '[.]', ',')) AS cost
+	FROM fsdb.catalogue b WHERE (
+		(b.RETAIL_PRICE = (SELECT MIN(a.RETAIL_PRICE)
+			FROM fsdb.catalogue a 
+			WHERE a.BARCODE = b.BARCODE)
+		AND (SELECT count(*) FROM fsdb.catalogue c WHERE b.barcode = c.barcode 
+		AND c.RETAIL_PRICE = b.RETAIL_PRICE) = 1))
+),
+minor_time AS (
+	SELECT k1.BARCODE, k1.PROV_TAXID, k1.cost
+	FROM (
+		SELECT b.BARCODE, b.PROV_TAXID, to_number(regexp_replace(regexp_replace(b.RETAIL_PRICE, '[^0-9.]', ''), '[.]', ',')) AS cost
+		FROM fsdb.catalogue b
+		WHERE(
+			(b.RETAIL_PRICE = (SELECT MIN(a.RETAIL_PRICE)
+				FROM fsdb.catalogue a
+				WHERE a.BARCODE = b.BARCODE) 
+			AND (SELECT count(*) FROM fsdb.catalogue c WHERE b.barcode = c.barcode
+			AND c.RETAIL_PRICE = b.RETAIL_PRICE) > 1))
+	) k1
+	WHERE k1.prov_taxid = (SELECT prov_taxid FROM fsdb.catalogue c WHERE c.BARCODE = k1.BARCODE AND rownum = 1)
+),
+all_data_prov AS (
+SELECT * from minor_cost UNION SELECT * from minor_time)
+
+SELECT c.PROV_TAXID AS taxID, 
+	t.BARCODE AS barCode, 
+	to_date(T.orderdate||T.ordertime,'yyyy / mm / ddhh:mi:ss am') AS orderdate,
+	'P' AS status, 
+	to_number(t.QUANTITY) AS units,
+	to_date(t.dliv_date||t.dliv_time,'yyyy / mm / ddhh:mi:ss am') AS deldate,
+	to_number(t.QUANTITY) * c.cost AS payment
+FROM fsdb.trolley t 
+JOIN all_data_prov c ON t.barcode = c.barcode
+	WHERE c.PROV_TAXID IS NOT NULL
+	AND EXTRACT(YEAR FROM to_date(t.orderdate,'yyyy-mm-dd')) = '2023'
+	AND NOT EXISTS (SELECT * FROM Replacements B 
+		WHERE B.taxID = c.PROV_TAXID 
+		AND B.BARCODE = t.BARCODE 
+		AND B.orderdate = to_date(T.orderdate||T.ordertime,'yyyy / mm / ddhh:mi:ss am')
+ );
+-- 5336 rows created.
 
 
 INSERT INTO Clients (username, reg_datetime, user_passw, name, surn1, surn2, email, mobile)
