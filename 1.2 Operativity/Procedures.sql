@@ -23,7 +23,6 @@ CREATE OR REPLACE PACKAGE BODY caffeine AS
     END update_status;
 
     PROCEDURE my_report (v_TAXID  IN Replacements.TAXID%TYPE) IS
-    DECLARE
         v_total number(10);
         aux_avg number(10);
         aux_total number(10);
@@ -67,40 +66,40 @@ CREATE OR REPLACE PACKAGE BODY caffeine AS
                 WHERE  TAXID = v_TAXID
                 AND barcode = orde.barcode;
                 DBMS_OUTPUT.PUT_LINE('---  Barcode ----- ' || orde.barcode);
-				DBMS_OUTPUT.PUT_LINE('Current cost ' || v_cost);
+		DBMS_OUTPUT.PUT_LINE('Current cost ' || v_cost);
 
-				-- min cost
-				SELECT MIN(payment/units) INTO v_mincost FROM Replacements
-				WHERE  TAXID = v_TAXID
-				AND barcode = orde.barcode
-				AND EXTRACT(YEAR FROM orderdate) = EXTRACT(YEAR FROM SYSDATE)-1;
-				DBMS_OUTPUT.PUT_LINE('Minimum cost ' || v_mincost);
+		-- min cost
+		SELECT MIN(payment/units) INTO v_mincost FROM Replacements
+		WHERE  TAXID = v_TAXID
+		AND barcode = orde.barcode
+		AND EXTRACT(YEAR FROM orderdate) = EXTRACT(YEAR FROM SYSDATE)-1;
+		DBMS_OUTPUT.PUT_LINE('Minimum cost ' || v_mincost);
 
-				-- max cost
-				SELECT MAX(payment/units) INTO v_maxcost FROM Replacements
-				WHERE  TAXID = v_TAXID
-				AND barcode = orde.barcode
-				AND EXTRACT(YEAR FROM orderdate) = EXTRACT(YEAR FROM SYSDATE)-1;
-				DBMS_OUTPUT.PUT_LINE('Maximum cost ' || v_maxcost);
+		-- max cost
+		SELECT MAX(payment/units) INTO v_maxcost FROM Replacements
+		WHERE  TAXID = v_TAXID
+		AND barcode = orde.barcode
+		AND EXTRACT(YEAR FROM orderdate) = EXTRACT(YEAR FROM SYSDATE)-1;
+		DBMS_OUTPUT.PUT_LINE('Maximum cost ' || v_maxcost);
 
-				-- difference regarding the best offer for the product
-				SELECT MIN(payment/units) INTO aux_diffoffer FROM Replacements
-				WHERE  TAXID = v_TAXID
-				AND barcode = orde.barcode
-				AND EXTRACT(YEAR FROM orderdate) = EXTRACT(YEAR FROM SYSDATE)-1;
-				
-				v_diffoffer := v_cost - aux_diffoffer;
-				DBMS_OUTPUT.PUT_LINE('Difference of offer ' || v_diffoffer);
-			
-				-- average cost (payment/units)
-				SELECT AVG(payment/units) INTO v_avgcost FROM Replacements
-				WHERE  TAXID = v_TAXID
-				AND barcode = orde.barcode
-				AND EXTRACT(YEAR FROM orderdate) = EXTRACT(YEAR FROM SYSDATE)-1;
-				
-				-- difference of current cost minus the average of costs of all offers
-				v_diffcost := v_cost - v_avgcost;
-				DBMS_OUTPUT.PUT_LINE('Difference of costs ' || v_diffcost);
+		-- difference regarding the best offer for the product
+		SELECT MIN(payment/units) INTO aux_diffoffer FROM Replacements
+		WHERE  TAXID = v_TAXID
+		AND barcode = orde.barcode
+		AND EXTRACT(YEAR FROM orderdate) = EXTRACT(YEAR FROM SYSDATE)-1;
+		
+		v_diffoffer := v_cost - aux_diffoffer;
+		DBMS_OUTPUT.PUT_LINE('Difference of offer ' || v_diffoffer);
+	
+		-- average cost (payment/units)
+		SELECT AVG(payment/units) INTO v_avgcost FROM Replacements
+		WHERE  TAXID = v_TAXID
+		AND barcode = orde.barcode
+		AND EXTRACT(YEAR FROM orderdate) = EXTRACT(YEAR FROM SYSDATE)-1;
+		
+		-- difference of current cost minus the average of costs of all offers
+		v_diffcost := v_cost - v_avgcost;
+		DBMS_OUTPUT.PUT_LINE('Difference of costs ' || v_diffcost);
             END;
         END LOOP;
     END my_report;
