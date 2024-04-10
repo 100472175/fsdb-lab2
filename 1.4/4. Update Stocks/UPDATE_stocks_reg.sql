@@ -10,15 +10,13 @@ DECLARE
     v_supplier_cost supply_lines.cost % TYPE;
 BEGIN
     SELECT cur_stock, min_stock, max_stock
-        INTO v_stock, v_min_stock, v_max_stock
+    INTO v_stock, v_min_stock, v_max_stock
     FROM references
     WHERE barcode = :new.barcode; 
-
     IF v_stock - :new.quantity > v_min_stock then
         UPDATE references
             SET cur_stock = v_stock - :new.quantity 
             WHERE barcode = :new.barcode;
-            
     ELSIF v_stock < :new.quantity then
         UPDATE references 
             SET cur_stock = 0 
@@ -38,9 +36,8 @@ BEGIN
             )
             SELECT taxID, min_cost INTO v_supplier, v_supplier_cost 
             FROM min_costs;
-
             INSERT INTO replacements (orderdate, barCode, taxID, status, units, payment) 
-            VALUES (SYSDATE, :new.barcode, NULL, 'D', v_max_stock/2, v_max_stock/2 * v_supplier_cost);
+            VALUES (SYSDATE, :new.barcode, v_supplier, 'D', v_max_stock/2, v_max_stock/2 * v_supplier_cost);
 		END IF;
     END IF;
 END;
