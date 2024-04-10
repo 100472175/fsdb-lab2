@@ -53,6 +53,15 @@ BEGIN
             INSERT INTO replacements (orderdate, barCode, taxID, status, units, payment) 
             VALUES (SYSDATE, :new.barcode, v_supplier, 'D', v_max_stock/2, v_max_stock/2 * v_supplier_cost);
 		END IF;
+        
+        SELECT count('x') 
+            INTO v_supply_lines_count
+            FROM supply_lines
+            WHERE barCode = :new.barCode;
+
+        IF v_supply_lines_count = 0 THEN
+            INSERT INTO supply_lines (barCode) VALUES (:new.barcode);
+        END IF;
     END IF;
 END;
 /
