@@ -58,7 +58,8 @@ CREATE OR REPLACE PACKAGE BODY caffeine AS
         DBMS_OUTPUT.PUT_LINE('Average delivery period ' || v_average);
 
         -- Orders info
-        FOR orde IN (SELECT DISTINCT a.barcode FROM Supply_Lines a, Replacements b WHERE a.TAXID = v_TAXID AND a.TAXID = b.TAXID AND a.barcode = b.barcode)
+        FOR orde IN (SELECT DISTINCT a.barcode FROM Supply_Lines a, Replacements b 
+		WHERE a.TAXID = v_TAXID AND a.TAXID = b.TAXID AND a.barcode = b.barcode)
         LOOP
             BEGIN
                 -- current cost
