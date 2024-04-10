@@ -1,4 +1,5 @@
-delete from client_lines where orderdate=TO_DATE('2014-03-09 07:17:49', 'YYYY-MM-DD HH24:MI:SS') AND barcode='QIQ43968I541183';
+DELETE FROM client_lines WHERE orderdate=TO_DATE('2014-03-09 07:17:49', 'YYYY-MM-DD HH24:MI:SS')
+ AND barcode='QIQ43968I541183';
 INSERT INTO CLIENT_LINES VALUES(
     TO_DATE('2014-03-09 07:17:49', 'YYYY-MM-DD HH24:MI:SS'),
     'narvaez',
